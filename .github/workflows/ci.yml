@@ -51,11 +51,11 @@ jobs:
           cat rollout-patch.yaml
           
       - name: Add and Commit
-        uses: EndBug/add-and-commit@v9
-        with:
-          cwd: ${{ env.HOME }}/${{ env.REPO }}/
-          message: "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
-          add: ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
+        run: | 
+          cd ${{ env.HOME }}/${{ env.REPO }}
+          git switch ${{ github.sha }}
+          git add ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
+          git commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
       
       - name: Create pull request
         uses: repo-sync/pull-request@v2
