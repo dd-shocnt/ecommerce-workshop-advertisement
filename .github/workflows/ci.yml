@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - 'main'
-      
+
+env:
+  HOME: /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/
+  REPO: ecommerce-workshop-advertisement-manifests
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -25,21 +29,38 @@ jobs:
           tags: shocnt/ads-service:${{ github.sha }}
 
   github:
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          repository: dd-shocnt/ecommerce-workshop-advertisement-manifests
+          repository: dd-shocnt/${{ env.REPO }}
           path: ecommerce-workshop-advertisement-manifests
+      
       - name: Create a new branch
         run: |
-          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests
+          cd ${{ env.HOME }}/${{ env.REPO }}
           git switch -c ${{ github.sha }}
   
       - name: Update rollout-patch.yaml
         run: | 
-          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests/overlays/dev
+          cd ${{ env.HOME }}/${{ env.REPO }}/overlays/dev
           sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
           cat rollout-patch.yaml
+          
+      - name: Add and Commit
+        uses: EndBug/add-and-commit@v7
+        with:
+          cwd: ${{ env.HOME }}/${{ env.REPO }}/
+          branch: ${{ github.sha }}
+          message: "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
+          add: ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
+      
+      - name: Create pull request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ github.sha }}
+          destination_branch: main
+          pr_title: ${{ github.sha }}
