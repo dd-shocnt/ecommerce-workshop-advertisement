@@ -38,6 +38,8 @@ def status():
         try:
             advertisements = Advertisement.query.all()
             return_ads = [ad for ad in advertisements if ad.weight >= 2.0 and ad.weight < 3.0]
+            for ad in return_ads:
+                app.logger.info(f"Ad: {ad.name} weight: {ad.weight}")
             return jsonify([b.serialize() for b in return_ads])
 
         except:
