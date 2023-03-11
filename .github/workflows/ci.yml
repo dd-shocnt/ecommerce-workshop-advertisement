@@ -56,10 +56,4 @@ jobs:
           git branch
           git add ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
           git -c user.name='github_actor' -c user.email='action@github.com' commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
-      
-      - name: Create pull request
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ github.sha }}
-          destination_branch: main
-          pr_title: ${{ github.sha }}
+　　　　　　　　　　　　　　　　　　　　git push origin ${{ github.sha }}
