@@ -15,7 +15,7 @@ jobs:
           echo ${{ github.ref }}
           echo ${{ github.sha }}
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Get the version
         id: get_version
         run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
