@@ -34,11 +34,12 @@ jobs:
           path: ecommerce-workshop-advertisement-manifests/overlays/dev
       - name: Create a new branch
         run: |
-          pwd
+          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests
           git switch -c ${{ github.sha }}
   
       - name: Update rollout-patch.yaml
         run: | 
+          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests/overlays/dev
           sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
           cat rollout-patch.yaml
