@@ -23,3 +23,21 @@ jobs:
         with:
           push: true
           tags: shocnt/ads-service:${{ github.sha }}
+
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: dd-shocnt/ecommerce-workshop-advertisement-manifests
+          path: ecommerce-workshop-advertisement-manifests/overlays/dev
+      - name: Create a new branch
+        run: |
+          git switch -c ${{ github.sha }}
+  
+      - name: Update rollout-patch.yaml
+        run: | 
+          sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
+          cat rollout-patch.yaml
