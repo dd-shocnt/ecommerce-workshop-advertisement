@@ -56,4 +56,5 @@ jobs:
           git branch
           git add ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
           git -c user.name='github_actor' -c user.email='action@github.com' commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
-　　　　　　　　　　　　　　　　　　　　git push origin ${{ github.sha }}
+          git push origin ${{ github.sha }}
+
