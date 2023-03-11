@@ -54,7 +54,6 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           cwd: ${{ env.HOME }}/${{ env.REPO }}/
-          branch: ${{ github.sha }}
           message: "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
           add: ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
       
