@@ -24,4 +24,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: dd-shocnt/ecommerce-workshop-advertisement:${{ GITHUB_SHA }}
+          tags: dd-shocnt/ecommerce-workshop-advertisement:$GITHUB_SHA
