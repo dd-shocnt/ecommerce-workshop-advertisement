@@ -32,12 +32,11 @@ jobs:
     #needs: docker
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: dd-shocnt/${{ env.REPO }}
-          path: ecommerce-workshop-advertisement-manifests
-      
+      - name: Clone
+        run: |
+          git clone git@github.com:dd-shocnt/ecommerce-workshop-advertisement-manifests.git
+          git remote -v
+          
       - name: Create a new branch
         run: |
           cd ${{ env.HOME }}/${{ env.REPO }}
