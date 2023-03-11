@@ -34,6 +34,7 @@ jobs:
           path: ecommerce-workshop-advertisement-manifests/overlays/dev
       - name: Create a new branch
         run: |
+          pwd
           git switch -c ${{ github.sha }}
   
       - name: Update rollout-patch.yaml
