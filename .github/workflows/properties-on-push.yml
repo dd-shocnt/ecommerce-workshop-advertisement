@@ -1,0 +1,27 @@
+name: Show Properties on push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  show-properties:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show github properties
+        run: | 
+          echo ${{ github.workflow }}
+          echo ${{ github.ref }}
+          echo ${{ github.sha }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Confirm git commit SHA output
+        run: echo ${{ steps.get_version.outputs.VERSION }}
+        
+        
+        
+        
