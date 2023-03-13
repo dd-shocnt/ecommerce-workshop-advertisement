@@ -36,6 +36,7 @@ jobs:
 
       - name: Git config
         run: |
+          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
  
