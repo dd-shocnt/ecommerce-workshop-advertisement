@@ -43,7 +43,8 @@ jobs:
           cd ${{ env.HOME }}/${{ env.REPO }}
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
- 
+          git remote set-url origin https://${{ secrets.GIT_USERNAME }}:${{ secrets.GIT_TOKEN }}@github.com/${{ secrets.GIT_USERNAME }}/${{ env.REPO }}.git/
+          
       - name: Create a new branch
         run: |
           cd ${{ env.HOME }}/${{ env.REPO }}
@@ -55,3 +56,12 @@ jobs:
           sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
           cat rollout-patch.yaml
+          
+      - name: Add and Commit
+        run: | 
+          cd ${{ env.HOME }}/${{ env.REPO }}
+          git branch
+          git status
+          git add ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
+          git commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
+          git push origin deploy/${{ github.sha }}
