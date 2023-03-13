@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - 'main'
-      
+
+env:
+  HOME: /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement
+  REPO: ecommerce-workshop-advertisement-manifests
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -22,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: shocnt/ads-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ads-service:${{ github.sha }}
 
   github:
     runs-on: ubuntu-latest
@@ -30,24 +34,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          repository: shocnt/ecommerce-workshop-advertisement-manifests
-          path: ecommerce-workshop-advertisement-manifests
+          repository: ${{ secrets.GIT_USERNAME }}/{{ env.REPO }}
+          path: {{ env.REPO }}
           ref: main
 
       - name: Git config
         run: |
-          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests
+          cd ${{ env.HOME }}/{{ env.REPO }}
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
  
       - name: Create a new branch
         run: |
-          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests
+          cd ${{ env.HOME }}/{{ env.REPO }}
           git switch -c deploy/${{ github.sha }}
   
       - name: Update rollout-patch.yaml
         run: | 
-          cd /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement-manifests/overlays/dev
+          cd ${{ env.HOME }}/{{ env.REPO }}/overlays/dev
           sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
           cat rollout-patch.yaml
+          
+     - 
