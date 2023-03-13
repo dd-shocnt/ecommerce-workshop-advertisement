@@ -29,17 +29,6 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ads-service:${{ github.sha }}
           
   github:
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: write
-      pull-requests: write
-      repository-projects: write
-      security-events: write
-      statuses: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,6 +43,9 @@ jobs:
           cd ${{ env.HOME }}/${{ env.REPO }}
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
+          git remote set-url origin git@github.com:${{ secrets.GIT_USERNAME }}/${{ env.REPO }}.git
+          echo ${{ secrets.GIT_DEPLOY_KEY }} > ~/deploy_key.pem
+          chmod 600 ~/deploy_key.pem
           
       - name: Create a new branch
         run: |
@@ -68,11 +60,13 @@ jobs:
           cat rollout-patch.yaml
           
       - name: Add, Commit and Push
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
         run: | 
           cd ${{ env.HOME }}/${{ env.REPO }}
+          git remote -v
           git branch
           git status
           git add ${{ env.HOME }}/${{ env.REPO }}/overlays/dev/rollout-patch.yaml
           git commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
-          git remote set-url origin https://${{ secrets.GIT_USERNAME }}:${{ secrets.GIT_TOKEN }}@github.com/${{ secrets.GIT_USERNAME }}/${{ env.REPO }}.git/
           git push origin deploy/${{ github.sha }}
