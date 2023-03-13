@@ -43,8 +43,7 @@ jobs:
           cd ${{ env.HOME }}/${{ env.REPO }}
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
-          git remote set-url origin https://${{ secrets.GIT_USERNAME }}:${{ secrets.GIT_TOKEN }}@github.com/${{ secrets.GIT_USERNAME }}/${{ env.REPO }}.git/
-          git remote -v
+          git remote set-url origin https://${{ secrets.GIT_USERNAME }}:${{ secrets.GIT_TOKEN }}@github.com/${{ secrets.GIT_USERNAME }}/${{ env.REPO }}
           
       - name: Create a new branch
         run: |
