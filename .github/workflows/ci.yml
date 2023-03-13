@@ -39,12 +39,14 @@ jobs:
           ref: main
 
       - name: Git config
+        env:
+          GIT_DEPLOY_KEY: ${{ secrets.GIT_DEPLOY_KEY }}
         run: |
           cd ${{ env.HOME }}/${{ env.REPO }}
           git config user.name ${{ secrets.GIT_USERNAME }}
           git config user.email ${{ secrets.GIT_EMAIL }}
           git remote set-url origin git@github.com:${{ secrets.GIT_USERNAME }}/${{ env.REPO }}.git
-          echo ${{ secrets.GIT_DEPLOY_KEY }} > ~/deploy_key.pem
+          echo "$GIT_DEPLOY_KEY" > ~/deploy_key.pem
           chmod 600 ~/deploy_key.pem
           
       - name: Create a new branch
