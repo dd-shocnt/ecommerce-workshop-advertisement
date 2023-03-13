@@ -1,2 +1,1 @@
 # ecommerce-workshop-advertisement
-TEST
