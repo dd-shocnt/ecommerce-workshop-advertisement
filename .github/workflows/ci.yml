@@ -30,6 +30,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ads-service:${{ github.sha }}
           
   github:
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
