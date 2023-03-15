@@ -63,6 +63,11 @@ jobs:
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
           cat rollout-patch.yaml
           
+          cd ${{ env.HOME }}/${{ env.REPO }}/overlays/prod
+          sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
+          cat rollout-patch.yaml
+          
       - name: Add, Commit and Push
         env:
           GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
