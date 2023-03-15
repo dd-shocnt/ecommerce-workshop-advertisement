@@ -77,5 +77,6 @@ jobs:
           git branch
           git status
           git add ${{ env.HOME }}/${{ env.REPO }}/overlays/staging/rollout-patch.yaml
+          git add ${{ env.HOME }}/${{ env.REPO }}/overlays/prod/rollout-patch.yaml
           git commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
           git push origin deploy/${{ github.sha }}
