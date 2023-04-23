@@ -66,6 +66,7 @@ jobs:
           cd ${{ env.HOME }}/${{ env.REPO }}/overlays/prod
           sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
           sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/{name: version, value: .*}/{name: version, value: "${{ github.sha }}"}/' rollout-patch.yaml
           cat rollout-patch.yaml
           
       - name: Add, Commit and Push
