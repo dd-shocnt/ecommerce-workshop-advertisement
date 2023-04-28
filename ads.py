@@ -1,6 +1,5 @@
 import requests
 import random
-import time
 
 from flask import Flask, Response, jsonify, send_from_directory
 from flask import request as flask_request
@@ -37,11 +36,9 @@ def status():
 
         try:
             advertisements = Advertisement.query.all()
-            return_ads = [ad for ad in advertisements if ad.weight >= 1.0 and ad.weight < 2.0]
+            return_ads = [ad for ad in advertisements if ad.weight >= 2.0 and ad.weight < 3.0]
             for ad in return_ads:
                 app.logger.info(f"Ad: {ad.name} weight: {ad.weight}")
-            # adding a half sleep to test something
-            time.sleep(2.5)
             return jsonify([b.serialize() for b in return_ads])
 
         except:
@@ -63,8 +60,6 @@ def status():
             db.session.commit()
             advertisements = Advertisement.query.all()
 
-            # adding a half sleep to test something
-            time.sleep(2.5)
             return jsonify([b.serialize() for b in advertisements])
 
         except:
