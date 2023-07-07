@@ -30,7 +30,7 @@ def weighted_image(weight):
         if ad.weight < weight:
             return jsonify(ad.serialize())
 
-@app.route('/ads', methods=['GET', 'POST'])
+@app.route('/errads', methods=['GET', 'POST'])
 def status():
     if flask_request.method == 'GET':
 
@@ -73,4 +73,3 @@ def status():
         err = jsonify({'error': 'Invalid request method'})
         err.status_code = 405
         return err
-

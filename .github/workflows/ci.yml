@@ -1,0 +1,83 @@
+name: Build, test and commit to manifest repo
+
+on:
+  push:
+    branches:
+      - 'main'
+
+env:
+  HOME: /home/runner/work/ecommerce-workshop-advertisement/ecommerce-workshop-advertisement
+  REPO: ecommerce-workshop-advertisement-manifests
+  GIT_USERNAME: dd-shocnt
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ads-service:${{ github.sha }}
+          
+  github:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.GIT_USERNAME }}/${{ env.REPO }}
+          path: ${{ env.REPO }}
+          ref: main
+
+      - name: Git config
+        env:
+          GIT_DEPLOY_KEY: ${{ secrets.GIT_DEPLOY_KEY }}
+        run: |
+          cd ${{ env.HOME }}/${{ env.REPO }}
+          git config user.name ${{ env.GIT_USERNAME }}
+          git config user.email ${{ secrets.GIT_EMAIL }}
+          git remote set-url origin git@github.com:${{ env.GIT_USERNAME }}/${{ env.REPO }}.git
+          echo "$GIT_DEPLOY_KEY" > ~/deploy_key.pem
+          chmod 600 ~/deploy_key.pem
+          
+      - name: Create a new branch
+        run: |
+          cd ${{ env.HOME }}/${{ env.REPO }}
+          git switch -c deploy/${{ github.sha }}
+  
+      - name: Update rollout-patch.yaml
+        run: | 
+          cd ${{ env.HOME }}/${{ env.REPO }}/overlays/staging
+          sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
+          cat rollout-patch.yaml
+          
+          cd ${{ env.HOME }}/${{ env.REPO }}/overlays/prod
+          sed -i -e 's/tags.datadoghq.com\/version: .*/tags.datadoghq.com\/version: "${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/- image: "shocnt\/ads-service:.*"/- image: "shocnt\/ads-service:${{ github.sha }}"/' rollout-patch.yaml
+          sed -i -e 's/{name: version, value: .*}/{name: version, value: "${{ github.sha }}"}/' rollout-patch.yaml
+          cat rollout-patch.yaml
+          
+      - name: Add, Commit and Push
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
+        run: | 
+          cd ${{ env.HOME }}/${{ env.REPO }}
+          git remote -v
+          git branch
+          git status
+          git add ${{ env.HOME }}/${{ env.REPO }}/overlays/staging/rollout-patch.yaml
+          git add ${{ env.HOME }}/${{ env.REPO }}/overlays/prod/rollout-patch.yaml
+          git commit -m "Updated manifests for the commit https://github.com/dd-shocnt/ecommerce-workshop-advertisement/commit/${{ github.sha }}"
+          git push origin deploy/${{ github.sha }}

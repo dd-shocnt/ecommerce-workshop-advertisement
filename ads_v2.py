@@ -1,6 +1,5 @@
 import requests
 import random
-import time
 
 from flask import Flask, Response, jsonify, send_from_directory
 from flask import request as flask_request
@@ -74,3 +73,4 @@ def status():
         err = jsonify({'error': 'Invalid request method'})
         err.status_code = 405
         return err
+
