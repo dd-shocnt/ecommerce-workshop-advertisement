@@ -1,0 +1,6 @@
+rulesets:
+  - python-code-style
+  - python-best-practices
+  - python-inclusive
+  - python-design
+  - python-flask
